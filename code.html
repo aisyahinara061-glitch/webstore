@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TheMods STORE</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0b0b14;
+color:#fff;
+}
+
+header{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:65px;
+background:#171727;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 20px;
+box-shadow:0 0 15px #8a2be2;
+z-index:1000;
+}
+
+.logo{
+font-size:24px;
+font-weight:bold;
+color:#b56cff;
+text-shadow:0 0 10px #8a2be2;
+}
+
+.menu{
+font-size:30px;
+cursor:pointer;
+}
+
+.sidebar{
+position:fixed;
+top:0;
+left:-260px;
+width:250px;
+height:100%;
+background:#1b1b30;
+padding-top:70px;
+transition:.3s;
+z-index:999;
+}
+
+.sidebar a{
+display:block;
+padding:15px;
+color:#fff;
+text-decoration:none;
+}
+
+.sidebar a:hover{
+background:#8a2be2;
+}
+
+.banner{
+margin-top:90px;
+padding:20px;
+}
+
+.profile{
+background:#1f1f36;
+padding:20px;
+border-radius:20px;
+text-align:center;
+box-shadow:0 0 20px rgba(138,43,226,.5);
+}
+
+.profile img{
+width:90px;
+height:90px;
+border-radius:50%;
+border:3px solid #8a2be2;
+}
+
+.search{
+padding:20px;
+}
+
+.search input{
+width:100%;
+padding:15px;
+border:none;
+outline:none;
+border-radius:10px;
+background:#292944;
+color:#fff;
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+gap:15px;
+padding:20px;
+}
+
+.card{
+background:#1f1f36;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0 0 12px rgba(138,43,226,.4);
+}
+
+.card img{
+width:100%;
+height:170px;
+object-fit:cover;
+}
+
+.card h3{
+padding:10px;
+}
+
+.card p{
+padding:0 10px 10px;
+color:#bbb;
+}
+
+.btn{
+display:block;
+margin:10px;
+padding:12px;
+background:#8a2be2;
+color:white;
+text-align:center;
+text-decoration:none;
+border-radius:10px;
+font-weight:bold;
+}
+
+#adminPanel{
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:95%;
+max-width:430px;
+background:#1f1f36;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 20px #8a2be2;
+z-index:2000;
+}
+#adminPanel h2{
+text-align:center;
+margin-bottom:15px;
+}
+
+#adminPanel button{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:#8a2be2;
+border:none;
+border-radius:10px;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+#productList{
+margin-top:15px;
+max-height:250px;
+overflow:auto;
+}
+
+.closeBtn{
+background:#ff3b3b!important;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">TheMods STORE</div>
+
+<div class="menu" onclick="toggleMenu()">☰</div>
+
+</header>
+
+<div class="sidebar" id="sidebar">
+
+<a href="#">🏠 Home</a>
+
+<a href="#">🛒 Produk</a>
+
+<a href="#">⭐ Premium</a>
+
+<a href="#">📞 Kontak</a>
+
+<a href="#" onclick="loginAdmin()">👑 Admin</a>
+
+</div>
+
+<div class="banner">
+
+<div class="profile">
+
+<img src="https://i.imgur.com/4M34hi2.png">
+
+<h2>TheMods OFFICIAL</h2>
+
+<p>Premium Store • Fast Response</p>
+
+</div>
+
+</div>
+
+<div class="search">
+
+<input
+type="text"
+id="search"
+placeholder="Cari Produk...">
+
+</div>
+
+<div class="products" id="products">
+
+</div>
+
+<div id="adminPanel">
+
+<h2>👑 PANEL ADMIN</h2>
+
+<button onclick="tambahProduk()">➕ Tambah Produk</button>
+
+<button onclick="maintenance()">🚧 Maintenance</button>
+
+<div id="productList">
+
+Belum ada produk.
+
+</div>
+
+<button class="closeBtn" onclick="tutupAdmin()">
+
+❌ Tutup Panel
+
+</button>
+
+</div>
+
+<script>
+
+const PASSWORD="admin123";
+
+const NOMOR_WA="6281214274328";
+
+let maintenanceMode=false;
+
+let products=JSON.parse(localStorage.getItem("products")||"[]");
+function simpanProduk(){
+localStorage.setItem("products",JSON.stringify(products));
+}
+
+function toggleMenu(){
+let sidebar=document.getElementById("sidebar");
+sidebar.style.left=sidebar.style.left=="0px"?"-260px":"0px";
+}
+
+function loginAdmin(){
+
+let pass=prompt("Masukkan Password Admin");
+
+if(pass!==PASSWORD){
+alert("Password Salah!");
+return;
+}
+
+document.getElementById("adminPanel").style.display="block";
+renderAdmin();
+
+}
+
+function tutupAdmin(){
+document.getElementById("adminPanel").style.display="none";
+}
+
+function tambahProduk(){
+
+let nama=prompt("Nama Produk");
+if(!nama)return;
+
+let harga=prompt("Harga Produk");
+if(!harga)return;
+
+let gambar=prompt("Link Gambar Produk");
+if(!gambar){
+gambar="https://picsum.photos/300/200?random="+Date.now();
+}
+
+products.push({
+nama:nama,
+harga:harga,
+gambar:gambar
+});
+
+simpanProduk();
+renderProduk();
+renderAdmin();
+
+}
+
+function renderProduk(){
+
+let html="";
+
+if(products.length==0){
+
+html=`
+<div class="card">
+<h3 style="padding:20px;">Belum Ada Produk</h3>
+<p style="padding:0 20px 20px;">Admin belum menambahkan produk.</p>
+</div>
+`;
+
+}else{
+
+products.forEach((p)=>{
+
+html+=`
+<div class="card">
+
+<img src="${p.gambar}">
+
+<h3>${p.nama}</h3>
+
+<p>${p.harga}</p>
+
+<a class="btn"
+href="https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(`╔════════════════════╗
+⚡ TheMods ⚡
+╚════════════════════╝
+
+🛍️ NEW ORDER RECEIVED
+
+📦 Produk : ${p.nama}
+💵 Harga : ${p.harga}
+🆔 Order ID : #${Date.now()}
+
+━━━━━━━━━━━━━━━━━━━━━━
+Halo Admin!
+
+Saya ingin melakukan pemesanan produk di TheMods.
+
+💳 Pembayaran:
+• QRIS
+• DANA
+
+Terima kasih 💜
+`)}">
+BELI
+</a>
+
+</div>
+`;
+
+});
+
+}
+
+document.getElementById("products").innerHTML=html;
+
+}
+function renderAdmin(){
+
+let html="";
+
+if(products.length==0){
+
+html="Belum ada produk.";
+
+}else{
+
+products.forEach((p,i)=>{
+
+html+=`
+
+<div style="background:#2b2b45;padding:10px;border-radius:10px;margin-bottom:10px;">
+
+<b>${p.nama}</b><br>
+
+${p.harga}
+
+<br><br>
+
+<button onclick="editProduk(${i})">✏️ Edit</button>
+
+<button onclick="hapusProduk(${i})">🗑️ Hapus</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+document.getElementById("productList").innerHTML=html;
+
+}
+
+function editProduk(i){
+
+let nama=prompt("Nama Produk",products[i].nama);
+
+if(!nama)return;
+
+let harga=prompt("Harga Produk",products[i].harga);
+
+if(!harga)return;
+
+let gambar=prompt("Link Gambar",products[i].gambar);
+
+products[i]={
+nama:nama,
+harga:harga,
+gambar:gambar
+};
+
+simpanProduk();
+renderProduk();
+renderAdmin();
+
+}
+
+function hapusProduk(i){
+
+if(confirm("Hapus produk ini?")){
+
+products.splice(i,1);
+
+simpanProduk();
+renderProduk();
+renderAdmin();
+
+}
+
+}
+
+function maintenance(){
+
+maintenanceMode=!maintenanceMode;
+
+if(maintenanceMode){
+
+document.getElementById("products").innerHTML=`
+<div style="padding:50px;text-align:center;">
+<h1>🚧 WEBSITE MAINTENANCE</h1>
+<p>Silakan kembali lagi nanti.</p>
+</div>
+`;
+
+}else{
+
+renderProduk();
+
+}
+
+}
+
+document.getElementById("search").addEventListener("keyup",function(){
+
+let cari=this.value.toLowerCase();
+
+let hasil=products.filter(p=>
+p.nama.toLowerCase().includes(cari)
+);
+
+let html="";
+
+hasil.forEach((p)=>{
+
+html+=`
+<div class="card">
+<img src="${p.gambar}">
+<h3>${p.nama}</h3>
+<p>${p.harga}</p>
+<a class="btn"
+href="https://wa.me/${NOMOR_WA}?text=${encodeURIComponent("Halo Admin, saya ingin membeli "+p.nama)}">
+BELI
+</a>
+</div>
+`;
+
+});
+
+document.getElementById("products").innerHTML=html;
+
+});
+
+renderProduk();
+
+</script>
+
+</body>
+  </html>
