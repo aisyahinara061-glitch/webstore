@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Id Kece By Azka</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body {
+            background: #0a0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(10,10,30,0.9);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 32px;
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 0 60px rgba(124,77,255,0.05);
+        }
+        .glow-text {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #4facfe, #43e97b);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradShift 4s ease infinite;
+            letter-spacing: 2px;
+        }
+        @keyframes gradShift {
+            0%,100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .sub {
+            text-align: center;
+            color: rgba(255,255,255,0.15);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            padding-bottom: 18px;
+        }
+        .list-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 14px 16px;
+            margin: 18px 0;
+            border: 1px solid rgba(255,255,255,0.03);
+            min-height: 80px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .list-box::-webkit-scrollbar { width: 3px; }
+        .list-box::-webkit-scrollbar-thumb { background: rgba(124,77,255,0.2); border-radius: 10px; }
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            animation: slideIn 0.3s ease;
+        }
+        .list-item .id-text {
+            color: rgba(255,255,255,0.85);
+            font-size: 15px;
+            font-weight: 500;
+            flex: 1;
+        }
+        .list-item .del-btn {
+            background: rgba(245,87,108,0.08);
+            border: none;
+            color: rgba(245,87,108,0.3);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 6px;
+            border-radius: 10px;
+            transition: 0.3s;
+            line-height: 1;
+        }
+        .list-item .del-btn:hover { background: rgba(245,87,108,0.2); color: rgba(245,87,108,0.8); }
+        .list-item .del-btn:active { transform: scale(0.8); }
+        .empty { color: rgba(255,255,255,0.08); text-align: center; padding: 12px 0; font-style: italic; }
+
+        .row { display: flex; gap: 10px; margin: 14px 0; }
+        .row input {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 60px;
+            padding: 13px 18px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .row input:focus { border-color: rgba(124,77,255,0.3); background: rgba(255,255,255,0.05); }
+        .row input::placeholder { color: rgba(255,255,255,0.12); }
+        .row button {
+            background: linear-gradient(135deg, #7c4dff, #f5576c);
+            border: none;
+            border-radius: 60px;
+            padding: 0 28px;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 25px rgba(124,77,255,0.2);
+            white-space: nowrap;
+        }
+        .row button:hover { transform: scale(1.02); box-shadow: 0 6px 35px rgba(124,77,255,0.3); }
+        .row button:active { transform: scale(0.95); }
+
+        .btn-copy {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 60px;
+            padding: 14px;
+            color: rgba(255,255,255,0.4);
+            font-weight: 700;
+            font-size: 14px;
+            margin: 8px 0 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-copy:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+
+        .btn-group { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+        .btn-group button {
+            flex: 1;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 40px;
+            padding: 11px 14px;
+            color: rgba(255,255,255,0.25);
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 70px;
+        }
+        .btn-group button:hover { background: rgba(255,255,255,0.04); }
+        .btn-group button.success { border-color: rgba(79,172,254,0.15); color: rgba(79,172,254,0.4); }
+        .btn-group button.success:hover { background: rgba(79,172,254,0.05); }
+        .btn-group button.danger { border-color: rgba(245,87,108,0.08); color: rgba(245,87,108,0.3); }
+        .btn-group button.danger:hover { background: rgba(245,87,108,0.04); }
+
+        .add-row { display: none; gap: 10px; margin: 12px 0; }
+        .add-row.show { display: flex; }
+        .add-row input {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(79,172,254,0.1);
+            border-radius: 60px;
+            padding: 11px 18px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .add-row input:focus { border-color: rgba(79,172,254,0.3); background: rgba(255,255,255,0.05); }
+        .add-row input::placeholder { color: rgba(255,255,255,0.1); }
+        .add-row button {
+            background: linear-gradient(135deg, #4facfe, #43e97b);
+            border: none;
+            border-radius: 60px;
+            padding: 11px 24px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 20px rgba(79,172,254,0.1);
+        }
+        .add-row button:hover { transform: scale(1.02); }
+
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.06);
+            font-size: 11px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.02);
+            letter-spacing: 3px;
+        }
+        .footer strong { color: rgba(255,255,255,0.1); }
+
+        .toast {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.03);
+            color: rgba(255,255,255,0.4);
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+        .toast.show { display: block; animation: fadeUp 0.3s ease; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes slideIn { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:translateX(0); } }
+
+        .buy-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .buy-box .label {
+            color: rgba(255,255,255,0.15);
+            font-size: 11px;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .buy-box .nomor-list {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            word-break: break-all;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .buy-box .nomor-list span {
+            display: inline-block;
+            background: rgba(79,172,254,0.08);
+            padding: 2px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(79,172,254,0.05);
+        }
+        .buy-box .nomor-list .empty-text {
+            color: rgba(255,255,255,0.1);
+        }
+        .buy-box .del-nomor {
+            background: rgba(245,87,108,0.08);
+            border: none;
+            color: rgba(245,87,108,0.3);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0 4px;
+            border-radius: 8px;
+            transition: 0.3s;
+            margin-left: 4px;
+        }
+        .buy-box .del-nomor:hover { background: rgba(245,87,108,0.2); color: rgba(245,87,108,0.8); }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="glow-text">✦ ID KECE ✦</div>
+    <div class="sub">⚡ by Azka ⚡</div>
+
+    <!-- LIST ID (tanpa nomor urut) -->
+    <div class="list-box" id="listBox">
+        <div id="idContainer"></div>
+    </div>
+
+    <!-- BUY -->
+    <div class="row">
+        <input type="text" id="nomorInput" placeholder="📱 Masukkan nomor">
+        <button id="buyBtn">🔥 On</button>
+    </div>
+
+    <!-- NOMOR YANG DI-BUY (tanpa nomor urut) -->
+    <div class="buy-box">
+        <div class="label">📦 NOMOR Penjual</div>
+        <div class="nomor-list" id="nomorContainer">
+            <span class="empty-text">(belum ada)</span>
+        </div>
+    </div>
+
+    <!-- TAMBAH ID MANUAL -->
+    <div class="add-row" id="addRow">
+        <input type="text" id="idBaruInput" placeholder="✏️ Tulis ID sendiri">
+        <button id="tambahBtn">✨ Tambah</button>
+    </div>
+
+    <button class="btn-copy" id="copyBtn">📋 Salin Text</button>
+
+    <div class="btn-group">
+        <button id="showAddBtn" class="success">➕ Tambah ID</button>
+        <button id="resetBtn" class="danger">↺ Reset</button>
+    </div>
+
+    <div id="toast" class="toast">✔️ Berhasil!</div>
+
+    <div class="footer">⚡ Powered by <strong>Azka</strong> ⚡</div>
+</div>
+
+<script>
+    let ids = ['AK-001', 'AK-002', 'AK-003', 'AK-004', 'AK-005'];
+    let nomorBuy = [];
+
+    function render() {
+        // Render list ID (tanpa nomor)
+        const container = document.getElementById('idContainer');
+        if (ids.length === 0) {
+            container.innerHTML = '<div class="empty">✦ kosong ✦</div>';
+        } else {
+            container.innerHTML = ids.map((id, i) => `
+                <div class="list-item">
+                    <span class="id-text">${id}</span>
+                    <button class="del-btn" data-index="${i}" title="Hapus ID ini">✕</button>
+                </div>
+            `).join('');
+        }
+
+        // Render nomor buy (tanpa nomor)
+        const nomorContainer = document.getElementById('nomorContainer');
+        if (nomorBuy.length === 0) {
+            nomorContainer.innerHTML = '<span class="empty-text">(belum ada)</span>';
+        } else {
+            nomorContainer.innerHTML = nomorBuy.map((n, i) => 
+                `<span>${n} <button class="del-nomor" data-index="${i}">✕</button></span>`
+            ).join('');
+        }
+
+        // Event hapus ID
+        document.querySelectorAll('.del-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                const deleted = ids[index];
+                ids.splice(index, 1);
+                render();
+                showToast(`🗑️ ${deleted} dihapus!`);
+            });
+        });
+
+        // Event hapus nomor buy
+        document.querySelectorAll('.del-nomor').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                const deleted = nomorBuy[index];
+                nomorBuy.splice(index, 1);
+                render();
+                showToast(`🗑️ ${deleted} dihapus!`);
+            });
+        });
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // BUY
+    document.getElementById('buyBtn').addEventListener('click', function() {
+        const nomor = document.getElementById('nomorInput').value.trim();
+        if (!nomor) return showToast('⚠️ Masukkan nomor dulu!');
+        if (nomorBuy.includes(nomor)) return showToast('⚠️ Nomor sudah ada!');
+        
+        nomorBuy.push(nomor);
+        document.getElementById('nomorInput').value = '';
+        render();
+        showToast(`✅ ${nomor} disimpan!`);
+    });
+
+    // COPY
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        let text = '====================================\n';
+        text += '         ✦ ID KECE BY AZKAXLANZ ✦\n';
+        text += '====================================\n\n';
+        text += 'LIST ID:\n';
+        if (ids.length === 0) {
+            text += '(kosong)\n';
+        } else {
+            ids.forEach((id) => text += `${id}\n`);
+        }
+        text += '\npenjual:\n';
+        if (nomorBuy.length === 0) {
+            text += '(belum ada)\n';
+        } else {
+            nomorBuy.forEach((n) => text += `${n}\n`);
+        }
+        text += '\n====================================\n';
+        text += 'Powered by Azka ✨\n';
+        text += '====================================';
+
+        navigator.clipboard.writeText(text).then(() => showToast('📋 Disalin!'))
+            .catch(() => {
+                const area = document.createElement('textarea');
+                area.value = text;
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand('copy');
+                document.body.removeChild(area);
+                showToast('📋 Disalin!');
+            });
+    });
+
+    // TAMBAH ID
+    document.getElementById('showAddBtn').addEventListener('click', function() {
+        document.getElementById('addRow').classList.toggle('show');
+    });
+
+    document.getElementById('tambahBtn').addEventListener('click', function() {
+        const input = document.getElementById('idBaruInput');
+        const val = input.value.trim();
+        if (!val) return showToast('⚠️ Tulis ID-nya!');
+        if (ids.includes(val)) return showToast('⚠️ ID sudah ada!');
+        ids.push(val);
+        render();
+        input.value = '';
+        document.getElementById('addRow').classList.remove('show');
+        showToast(`✨ ${val} ditambahkan!`);
+    });
+
+    document.getElementById('idBaruInput').addEventListener('keyup', e => { if (e.key === 'Enter') document.getElementById('tambahBtn').click(); });
+    document.getElementById('nomorInput').addEventListener('keyup', e => { if (e.key === 'Enter') document.getElementById('buyBtn').click(); });
+
+    // RESET
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        ids = ['AK-001', 'AK-002', 'AK-003', 'AK-004', 'AK-005'];
+        nomorBuy = [];
+        render();
+        showToast('↺ Reset ke default!');
+    });
+
+    render();
+</script>
+</body>
+      </html>
