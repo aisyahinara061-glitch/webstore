@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Downloader</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #000, #1a1a2e);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #16213e;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        h1 { text-align: center; margin-bottom: 20px; color: #25f4ee; }
+        .user-info {
+            text-align: right;
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #0f3460;
+            border-radius: 10px;
+            background: #0f3460;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus { border-color: #25f4ee; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #25f4ee, #fe2c55);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { opacity: 0.9; }
+        #hasil {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0f3460;
+            border-radius: 10px;
+            display: none;
+        }
+        #hasil img { width: 100%; border-radius: 10px; margin: 10px 0; }
+        #hasil a {
+            display: block;
+            padding: 12px;
+            background: #25f4ee;
+            color: black;
+            text-decoration: none;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        #loading { text-align: center; color: #25f4ee; display: none; }
+        .logout {
+            background: #fe2c55;
+            width: auto;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="user-info">
+        <span id="welcome"></span>
+        <button class="logout" onclick="logout()">Logout</button>
+    </div>
+    
+    <h1>📥 TikTok Downloader</h1>
+    
+    <input type="text" id="url" placeholder="Paste link TikTok di sini...">
+    <button onclick="download()">Download</button>
+    
+    <div id="loading">⏳ Loading...</div>
+    <div id="hasil"></div>
+</div>
+
+<script>
+    // Cek login
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user) {
+        window.location.href = 'login.html';
+    } else {
+        document.getElementById('welcome').innerText = 'Halo, ' + user.nama;
+    }
+
+    async function download() {
+        const url = document.getElementById('url').value.trim();
+        
+        if (!url) {
+            alert('Masukkan link TikTok!');
+            return;
+        }
+
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('hasil').style.display = 'none';
+
+        try {
+            const res = await fetch('/api/download?url=' + encodeURIComponent(url));
+            const data = await res.json();
+
+            document.getElementById('loading').style.display = 'none';
+
+            if (data.success) {
+                let html = '<h3>✅ Berhasil!</h3>';
+                
+                if (data.data) {
+                    if (data.data.cover) {
+                        html += `<img src="${data.data.cover}" alt="Cover">`;
+                    }
+                    if (data.data.title) {
+                        html += `<p><b>Judul:</b> ${data.data.title}</p>`;
+                    }
+                    if (data.data.author) {
+                        html += `<p><b>Author:</b> ${data.data.author}</p>`;
+                    }
+                    if (data.data.video_url) {
+                        html += `<a href="${data.data.video_url}" target="_blank">📥 Download Video (No Watermark)</a>`;
+                    }
+                    if (data.data.music_url) {
+                        html += `<a href="${data.data.music_url}" target="_blank">🎵 Download Audio</a>`;
+                    }
+                } else {
+                    html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                }
+                
+                document.getElementById('hasil').innerHTML = html;
+                document.getElementById('hasil').style.display = 'block';
+            } else {
+                document.getElementById('hasil').innerHTML = 
+                    '<p style="color:red">❌ ' + (data.message || 'Gagal download!') + '</p>';
+                document.getElementById('hasil').style.display = 'block';
+            }
+        } catch (e) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('hasil').innerHTML = 
+                '<p style="color:red">❌ Error: ' + e.message + '</p>';
+            document.getElementById('hasil').style.display = 'block';
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+
+    // Enter buat download
+    document.getElementById('url').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') download();
+    });
+</script>
+
+</body>
+</html>
