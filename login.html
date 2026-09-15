@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TikTok Downloader</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #000, #1a1a2e);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #16213e;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        h1 { text-align: center; margin-bottom: 20px; color: #25f4ee; }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #0f3460;
+            border-radius: 10px;
+            background: #0f3460;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus { border-color: #25f4ee; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #25f4ee, #fe2c55);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { opacity: 0.9; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #0f3460;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .tab.active { background: #25f4ee; color: black; }
+        #pesan { text-align: center; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎵 TikTok Downloader</h1>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('login')">Login</div>
+        <div class="tab" onclick="switchTab('register')">Register</div>
+    </div>
+    
+    <input type="text" id="nama" placeholder="Nama">
+    <input type="password" id="password" placeholder="Password">
+    <button id="btnAksi" onclick="login()">Masuk</button>
+    
+    <div id="pesan"></div>
+</div>
+
+<script>
+    let mode = 'login';
+
+    function switchTab(m) {
+        mode = m;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const btn = document.getElementById('btnAksi');
+        if (m === 'login') {
+            btn.innerText = 'Masuk';
+            btn.onclick = login;
+        } else {
+            btn.innerText = 'Daftar';
+            btn.onclick = register;
+        }
+    }
+
+    async function login() {
+        const nama = document.getElementById('nama').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const pesan = document.getElementById('pesan');
+
+        if (!nama || !password) {
+            pesan.style.color = 'red';
+            pesan.innerText = 'Isi nama dan password!';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nama, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                pesan.style.color = 'green';
+                pesan.innerText = '✅ Login berhasil!';
+                localStorage.setItem('user', JSON.stringify(data.user));
+                setTimeout(() => window.location.href = 'index.html', 1000);
+            } else {
+                pesan.style.color = 'red';
+                pesan.innerText = '❌ ' + data.message;
+            }
+        } catch (e) {
+            pesan.style.color = 'red';
+            pesan.innerText = '❌ Error: ' + e.message;
+        }
+    }
+
+    async function register() {
+        const nama = document.getElementById('nama').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const pesan = document.getElementById('pesan');
+
+        if (!nama || !password) {
+            pesan.style.color = 'red';
+            pesan.innerText = 'Isi nama dan password!';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nama, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                pesan.style.color = 'green';
+                pesan.innerText = '✅ ' + data.message;
+                setTimeout(() => switchTab('login'), 1500);
+            } else {
+                pesan.style.color = 'red';
+                pesan.innerText = '❌ ' + data.message;
+            }
+        } catch (e) {
+            pesan.style.color = 'red';
+            pesan.innerText = '❌ Error: ' + e.message;
+        }
+    }
+
+    // Enter buat login
+    document.getElementById('password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            mode === 'login' ? login() : register();
+        }
+    });
+</script>
+
+</body>
+</html>
